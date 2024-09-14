@@ -11,7 +11,7 @@ import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry";
 import AxisGridHelper from "@/utils/AxisGridHelper";
 import { GUI } from 'lil-gui'
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
-import {color, or, texture} from "three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements";
+import {color, texture} from "three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements";
 import {RectAreaLightUniformsLib} from "three/examples/jsm/lights/RectAreaLightUniformsLib";
 import {RectAreaLightHelper} from "three/examples/jsm/helpers/RectAreaLightHelper";
 import MinMaxGUIHelper from "@/utils/helper/MinMaxGUIHelper";
@@ -42,79 +42,68 @@ function init() {
     const fov = 60;
     const aspect = 2; // the canvas default
     const near = 0.1;
-    const far = 1000;
+    const far = 200;
     const camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
     camera.position.z = 30;
 
     const scene = new THREE.Scene();
+    //create canvas
+    const ctx = document.createElement('canvas').getContext('2d')
+    ctx.canvas.width = 256;
+    ctx.canvas.height = 256;
+    ctx.fillStyle = '#FFF'
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 
-    const orbitControls = new OrbitControls(camera, canvas);
-    orbitControls.enableDamping = true;
-    orbitControls.target.set(0, 0, 0);
+    // const texture = track(new THREE.CanvasTexture(ctx.canvas))
 
-    const cellSize = 10
-    const cell = new Uint8Array(cellSize * cellSize * cellSize)
+    const loader = new THREE.TextureLoader()
+    const texture = loader.load('src/assets/image/frame.png')
 
-    for ( let y = 0; y < cellSize; ++ y ) {
+    const material = track(new THREE.MeshBasicMaterial({
+        map: texture
+    }))
 
-        for ( let z = 0; z < cellSize; ++ z ) {
+    const boxGeometry = new THREE.BoxGeometry(8, 8, 8);
 
-            for ( let x = 0; x < cellSize; ++ x ) {
+    const cube = track(new THREE.Mesh(boxGeometry, material))
+    scene.add(cube)
 
-                const height = ( Math.sin( x / cellSize * Math.PI * 4 ) + Math.sin( z / cellSize * Math.PI * 6 ) ) * 20 + cellSize / 2;
-                if ( height > y && height < y + 1 ) {
-
-                    const offset = y * cellSize * cellSize +
-                        z * cellSize +
-                        x;
-                    cell[ offset ] = 1;
-
-                }
-
-            }
-
+    function randInt(min, max) {
+        if (max === undefined) {
+            max = min;
+            min = 0;
         }
-
+        return Math.random() * (max - min) + min | 0;
     }
 
-    const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    const material = new THREE.MeshBasicMaterial( { color: 'green' } );
-    let num = 0
-    for ( let y = 0; y < cellSize; ++ y ) {
+    function drawRandomDot() {
+        ctx.fillStyle = `#${randInt(0x1000000).toString(16).padStart(6, '0')}`;
+        ctx.beginPath();
 
-        for ( let z = 0; z < cellSize; ++ z ) {
+        const x = randInt(256);
+        const y = randInt(256)
 
-            for ( let x = 0; x < cellSize; ++ x ) {
+        const radius = randInt(10, 64)
 
-                const offset = y * cellSize * cellSize +
-                    z * cellSize +
-                    x;
-                const block = cell[ offset ];
-                if ( block ) {
-
-                    const mesh = new THREE.Mesh( geometry, material );
-                    mesh.position.set( x, y, z );
-                    scene.add( mesh );
-                    num++
-                }
-
-            }
-
-        }
-
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
     }
-    console.log(num)
 
-    let renderRequested = false
+    resTrack.dispose();
+
 
     function render(time) {
-        renderRequested = false
+        drawRandomDot()
+        texture.needsUpdate = true;
         if (resizeRendererToDisplaySize(renderer)) {
             const canvas = renderer.domElement;
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
             camera.updateProjectionMatrix();
         }
+        cube.rotation.x = time * 0.001
+        cube.rotation.y = time * 0.001
         renderer.render(scene, camera)
+        requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
 
@@ -133,15 +122,6 @@ function init() {
         return needResize;
 
     }
-    function requestRenderIfNotRequested() {
-        if (!renderRequested) {
-            renderRequested = true;
-            requestAnimationFrame(render);
-        }
-    }
-    orbitControls.addEventListener('change', requestRenderIfNotRequested)
-
-
 
 }
 

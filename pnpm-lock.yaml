@@ -32,6 +32,9 @@ dependencies:
   element-plus:
     specifier: ^2.4.0
     version: registry.npmmirror.com/element-plus@2.4.0(vue@3.4.37)
+  lil-gui:
+    specifier: ^0.19.2
+    version: registry.npmmirror.com/lil-gui@0.19.2
   mitt:
     specifier: ^3.0.1
     version: registry.npmmirror.com/mitt@3.0.1
@@ -2537,6 +2540,12 @@ packages:
       prelude-ls: registry.npmmirror.com/prelude-ls@1.2.1
       type-check: registry.npmmirror.com/type-check@0.4.0
     dev: true
+
+  registry.npmmirror.com/lil-gui@0.19.2:
+    resolution: {integrity: sha512-nU8j4ND702ouGfQZoaTN4dfXxacvGOAVK0DtmZBVcUYUAeYQXLQAjAN50igMHiba3T5jZyKEjXZU+Ntm1Qs6ZQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/lil-gui/-/lil-gui-0.19.2.tgz}
+    name: lil-gui
+    version: 0.19.2
+    dev: false
 
   registry.npmmirror.com/lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz}
